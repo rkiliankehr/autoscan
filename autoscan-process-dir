@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# Parameters: <scandir>
+#
+# <scandir> contains several files which have been scanned in a batch mode.
+# The files follow the pattern 'scan.DDD.tif"
+#
+
+SCANDIR="$1"
+BINDIR=/opt/autoscan
+
+for SCANFILE in $SCANDIR/*
+do
+	$BINDIR/autoscan-process "$SCANFILE"
+done
+

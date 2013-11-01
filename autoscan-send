@@ -1,0 +1,28 @@
+#!/bin/sh
+
+exec >/tmp/autoscan-send.$$.log 2>&1
+set -vx
+
+FILE="$1"
+TIME=$(date "+%Y%m%d-%H%M%S")
+BASEFILE=$(basename $FILE)
+
+logger "Executing autoscan-send '$FILE'."
+
+{
+echo "Subject: [autoscan] $TIME $EVERNOTE_NOTEBOOK $EVERNOTE_TAGS
+To: $EVERNOTE_EMAIL
+Mime-Version: 1.0
+Content-Type: Multipart/Mixed; boundary=\"ATTACHMENT-BOUNDRY\"
+
+--ATTACHMENT-BOUNDRY
+Content-Disposition: attachment; filename="$BASEFILE"
+Content-type: application/pdf; name="$BASEFILE"
+Content-Transfer-Encoding: base64
+"
+base64 $FILE
+echo "
+--ATTACHMENT-BOUNDRY
+"
+} |
+ssmtp "$EVERNOTE_EMAIL"

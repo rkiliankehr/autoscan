@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# Parameters: <scanfile>
+#
+# <scanfile>: .tif file which is the scan result
+#
+
+exec >/tmp/autoscan-process.$$.log 2>&1
+set -vx
+
+FILETIFF="$1"
+DIRNAME=$(dirname $FILETIFF)
+BASENAME=$(basename $FILETIFF .tif)
+BASEFILE="$DIRNAME/$BASENAME"
+FILEPNG="$BASEFILE.png"
+FILEPDF="$BASEFILE.pdf"
+
+logger "Executing autoscan-process '$FILETIFF'..."
+
+convert "$FILETIFF" "$FILEPNG"
+if [ "$?" != 0 ]
+then 
+    /opt/autoscan/autoscan-alert "Command 'convert "$FILETIFF" "$FILEPNG"' failed."
+    exit 1
+fi
+touch "$FILEPNG".converted
+
+convert "$FILEPNG" "$FILEPDF"
+if [ "$?" != 0 ]
+then 
+    /opt/autoscan/autoscan-alert "Command 'convert "$FILEPNG" "$FILEPDF"' failed."
+    exit 1
+fi
+touch "$FILEPDF".converted
+
+/opt/autoscan/autoscan-send "$FILEPDF"
+if [ "$?" != 0 ]
+then 
+    /opt/autoscan/autoscan-alert "Sending file "$FILEPDF"' failed."
+    exit 1
+fi
+touch "$FILEPDF".sent
+

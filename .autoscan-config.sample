@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Private configuration parameters for autoscan.
+
+# If something in the scanning process goes wrong then an email
+# is sent to the following address.
+export ALERT_EMAIL="your_email@your_isp"
+
+# The email address of your Evernote account.
+export EVERNOTE_EMAIL="your_evernote_email@m.evernote.com"
+
+# Notebooks start with the '@'sign.
+export EVERNOTE_NOTEBOOK="@ScanInbox"
+
+# Tags start with the '#' sign. 
+export EVERNOTE_TAGS="#@scan #.in"

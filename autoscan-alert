@@ -1,0 +1,12 @@
+#!/bin/sh
+
+TIME=$(date "+%Y%m%d-%H%M%S")
+logger "autoscan: [alert] $@"
+
+echo "Subject: [autoscan] Alert
+To: $ALERT_EMAIL
+
+$@
+" |
+ssmtp -v "$ALERT_EMAIL"
+
