@@ -5,12 +5,14 @@ This is a small Raspberry Pi project to build a home scanning solution that nice
 
 The files in this workspace are expected to reside in /opt/autoscan.
 
+
 Installation on a Raspberry Pi
 ------------------------------
 
 On the Raspberri Pi the following packages must be installed for these scripts to work:
 
     $ sudo apt-get install ssmtp sane mailutils scanbuttond imagemagick
+
 
 Check Scanner
 -------------
@@ -67,8 +69,8 @@ Next perform the following:
     $ sudo /etc/init.d/scanbuttond restart
 
 
-Configuring autoscan:
----------------------
+Configuring Email and Evernote:
+-------------------------------
 
 Configure your personal settings for autoscan:
 
@@ -78,3 +80,10 @@ Configure your personal settings for autoscan:
 
 Now change the email addresses and parameters to match your specific context.
 
+
+Configuring Scanning Options:
+-----------------------------
+
+Now you need to configure what autoscan should do when pressing one of the scanner buttons.
+
+Open buttonpressed.sh and make the necessary modifications that fit your needs. The script should be pretty easy to understand and you should add/modify the relevant parts in the lower part of the script.
