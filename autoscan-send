@@ -3,7 +3,7 @@
 exec >/tmp/autoscan-send.$$.log 2>&1
 set -vx
 
-source /opt/autoscan/.autoscan-config
+. /opt/autoscan/.autoscan-config
 
 FILE="$1"
 TIME=$(date "+%Y%m%d-%H%M%S")

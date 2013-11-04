@@ -17,7 +17,7 @@ SCANNER="$2"
 
 TMPDIR="/tmp/autoscan"
 
-source /opt/autoscan/.autoscan-config
+. /opt/autoscan/.autoscan-config
 
 # Create temporary working directory if not present.
 mkdir -p "$TMPDIR"
