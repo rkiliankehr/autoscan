@@ -1,0 +1,31 @@
+#!/bin/sh
+
+SPOOLDIR=/var/spool/autoscan
+ARCHIVEDIR=/archive/autoscan
+SELF=$(basename "$0")
+
+cd "$SPOOLDIR" || 
+{ 
+logger "Could not enter spool directory $SPOOL"
+exit 1 
+}
+
+find . -type f -name '*.sent' |
+while read SENT
+do
+    DIRNAME=$(dirname "$SENT")
+    BASEDIR=$(basename "$DIRNAME")
+    BASEFILE=$(basename "$SENT" .pdf.sent)
+    case "$SELF" in
+	autoscan-archive)
+	    mv "$BASEDIR/$BASEFILE".pdf "$ARCHIVEDIR/$BASEDIR.$BASEFILE.pdf"
+	    rm -f "$BASEDIR/$BASEFILE"*
+	    rmdir "$DIRNAME"
+	    ;;
+	autoscan-clear)
+	    rm -f "$BASEDIR/$BASEFILE"*
+	    rmdir "$DIRNAME"
+	    ;;
+	*)
+    esac
+done
