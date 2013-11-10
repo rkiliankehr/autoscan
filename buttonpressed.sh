@@ -7,7 +7,7 @@
 #        more scanners. In this case we can pass the device name to SANE programs 
 #        like scanimage.
 
-exec >/tmp/buttonpressed.$$.log 2>&1
+exec >/tmp/buttonpressed.log 2>&1
 set -vx 
 
 logger "Starting buttonpressed.sh with ID="$(id)"."
@@ -15,13 +15,18 @@ logger "Starting buttonpressed.sh with ID="$(id)"."
 BUTTON="$1"
 SCANNER="$2"
 
-TMPDIR="/tmp/autoscan"
+TMPDIR="/var/spool/autoscan"
 
 . /opt/autoscan/.autoscan-config
 
 # Create temporary working directory if not present.
 mkdir -p "$TMPDIR"
-
+if [ $? != 0 ]
+then
+    logger Could not create working directory "$TMPDIR".
+    exit 1
+fi
+ 
 # Aquire lock for safely performing a scan.
 
 LOCKFILE="$TMPDIR/.lockfile"

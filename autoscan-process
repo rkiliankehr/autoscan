@@ -5,7 +5,7 @@
 # <scanfile>: .tif file which is the scan result
 #
 
-exec >/tmp/autoscan-process.$$.log 2>&1
+exec >/tmp/autoscan-process.log 2>&1
 set -vx
 
 FILETIFF="$1"
