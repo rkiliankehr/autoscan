@@ -51,15 +51,15 @@ If everything works well we can go ahead in the configuration.
 Set up environment
 ------------------
 
-The files in this workspace are expected to reside in /opt/autoscan.
+The files in this workspace are expected to reside in `/opt/autoscan`.
 
-    Â$sudo mkdir -p /opt/autoscan
+    $ sudo mkdir -p /opt/autoscan
     $ cd /opt
     $ sudo chown pi autoscan
     $ chgrp pi autoscan
     $ git clone git@github.com:rkiliankehr/autoscan.git
 
-Create the sppol directory needed for the scanning process. Should not be in /tmp since in case of a tmpfs setup the space would be simply too small.
+Create the sppol directory needed for the scanning process. Should not be in `/tmp` since in case of a tmpfs setup the space would be simply too small.
 
     $ sudo mkdir -p /var/spool/autoscan
     $ sudo chown saned /var/spool/autoscan
@@ -68,7 +68,7 @@ Create the sppol directory needed for the scanning process. Should not be in /tm
 Configure scanbuttond
 ---------------------
 
-The file /etc/default/scanbuttond should must be modified to contain the following:
+The file `/etc/default/scanbuttond` should must be modified to contain the following configuration:
 
     # Set to yes to start scanbuttond
     RUN=yes
@@ -79,7 +79,7 @@ Next perform the following:
 
     $ sudo ln -sf /opt/autoscan/buttonpressed.sh /etc/scanbuttond
 
-(Re)start the scanbuttond:
+(Re)start the `scanbuttond` daemon:
 
     $ sudo /etc/init.d/scanbuttond restart
 
@@ -103,7 +103,16 @@ Configure Scanning Options
 
 Now you need to configure what autoscan should do when pressing one of the scanner buttons.
 
-Open buttonpressed.sh and make the necessary modifications that fit your needs. The script should be pretty easy to understand and you should add/modify the relevant parts in the lower part of the script.
+Open `buttonpressed.sh` and make the necessary modifications that fit your needs. The script should be pretty easy to understand and you should add/modify the relevant parts in the lower part of the script.
+
+In the script here you see that three buttons are currently configured as follows:
+
+* Flatbed scan, single document, grayscale, 300 dpi
+* Flatbed scan, single document, colour, 200 dpi
+* ADF (feeder) scan, multiple documents, grayscale, 300 dpi
+
+Colour scans with 300 dpi tend to become pretty large and require more processing time (conversion, email send, evernote sync time) they should be used with care. 
+
 
 Configure Postprocessing
 ------------------------
