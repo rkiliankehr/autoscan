@@ -3,6 +3,21 @@ autoscan
 
 This is a small Raspberry Pi project to build a home scanning solution that nicely integrates with the Evernote cloud service.
 
+It builds upon great project descriptions and blogs from other people and I have tried to make it simple(r) for others to consume that prior art such as
+
+* http://johannesnews.blogspot.de/2013/02/scan-to-email-with-only-one-buttonpress.html
+* http://eduardoluis.com/raspberry-pi-and-usb-network-scanner/
+* http://brainofanape.blogspot.de/2012/11/scanning-to-cloud-fujitsu-scansnap.html
+
+Main differences compared to the others is:
+
+* make use of the scanner buttons instead of additional GPIO connected buttons;
+* scan and then immediately perform the asynchronous post-processing steps such as PDF creation and sending to Evernote;
+* increase robustness of the overall solution;
+* avoid setting up a full-fledged email system on the raspi.
+
+Thanks for the great prior work of the colleages listed above.
+
 
 Install necessary packages on a the Pi
 --------------------------------------
@@ -152,3 +167,7 @@ Add the following into the crontab file for root:
     0  *  *  *  *  /opt/autoscan/autoscan-clean
 
 
+Todo
+----
+
+Lots of things could be improved. 
