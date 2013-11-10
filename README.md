@@ -50,6 +50,39 @@ Now perform a test scan:
 If everything works well we can go ahead in the configuration.
 
 
+Setting up environment
+----------------------
+
+Create the sppol directory needed for the scanning process. Should not be in /tmp since in case of a tmpfs setup the space would be simply too small.
+
+    $ sudo su
+    # mkdir -p /var/spool/autoscan
+    # chown saned /var/spool/autoscan
+
+*Option 1*
+
+Create the archive directory in case you would like to keep the generated PDF around.
+
+    # mkdir /archive/autoscan
+    # ln -sf /opt/autoscan/autoscan-postprocessing /opt/autoscan/autoscan-archive
+    # crontab -e
+
+Add the following into the crontab file for root:
+
+    0   *  *   *   *     /opt/autoscan/autoscan-archive
+
+*Option 2*
+
+Alternatively you can just remove all files after they have been sent.
+
+    # ln -sf /opt/autoscan/autoscan-postprocessing /opt/autoscan/autoscan-clean
+    # crontab -e
+
+Add the following into the crontab file for root:
+
+    0   *  *   *   *     /opt/autoscan/autoscan-clean
+
+
 Configuring scanbuttond
 -----------------------
 
