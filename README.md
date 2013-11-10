@@ -3,8 +3,6 @@ autoscan
 
 This is a small Raspberry Pi project to build a home scanning solution that nicely integrates with the Evernote cloud service.
 
-The files in this workspace are expected to reside in /opt/autoscan.
-
 
 Installation on a Raspberry Pi
 ------------------------------
@@ -53,38 +51,22 @@ If everything works well we can go ahead in the configuration.
 Setting up environment
 ----------------------
 
+The files in this workspace are expected to reside in /opt/autoscan.
+
+    Â$sudo mkdir -p /opt/autoscan
+    $ cd /opt
+    $ sudo chown pi autoscan
+    $ chgrp pi autoscan
+    $ git clone git@github.com:rkiliankehr/autoscan.git
+
 Create the sppol directory needed for the scanning process. Should not be in /tmp since in case of a tmpfs setup the space would be simply too small.
 
-    $ sudo su
-    # mkdir -p /var/spool/autoscan
-    # chown saned /var/spool/autoscan
-
-*Option 1*
-
-Create the archive directory in case you would like to keep the generated PDF around.
-
-    # mkdir /archive/autoscan
-    # ln -sf /opt/autoscan/autoscan-postprocessing /opt/autoscan/autoscan-archive
-    # crontab -e
-
-Add the following into the crontab file for root:
-
-    0   *  *   *   *     /opt/autoscan/autoscan-archive
-
-*Option 2*
-
-Alternatively you can just remove all files after they have been sent.
-
-    # ln -sf /opt/autoscan/autoscan-postprocessing /opt/autoscan/autoscan-clean
-    # crontab -e
-
-Add the following into the crontab file for root:
-
-    0   *  *   *   *     /opt/autoscan/autoscan-clean
+    $ sudo mkdir -p /var/spool/autoscan
+    $ sudo chown saned /var/spool/autoscan
 
 
-Configuring scanbuttond
------------------------
+Configure scanbuttond
+---------------------
 
 The file /etc/default/scanbuttond should must be modified to contain the following:
 
@@ -102,8 +84,8 @@ Next perform the following:
     $ sudo /etc/init.d/scanbuttond restart
 
 
-Configuring Email and Evernote:
--------------------------------
+Configure Email and Evernote
+----------------------------
 
 Configure your personal settings for autoscan:
 
@@ -114,9 +96,37 @@ Configure your personal settings for autoscan:
 Now change the email addresses and parameters to match your specific context.
 
 
-Configuring Scanning Options:
------------------------------
+Configure Scanning Options
+--------------------------
 
 Now you need to configure what autoscan should do when pressing one of the scanner buttons.
 
 Open buttonpressed.sh and make the necessary modifications that fit your needs. The script should be pretty easy to understand and you should add/modify the relevant parts in the lower part of the script.
+
+Configure Postprocessing
+------------------------
+
+*Option 1*
+
+Create the archive directory in case you would like to keep the generated PDF around.
+
+    # mkdir /archive/autoscan
+    # ln -sf /opt/autoscan/autoscan-postprocessing /opt/autoscan/autoscan-archive
+    # crontab -e
+
+Add the following into the crontab file for root:
+
+    0  *  *  *  *  /opt/autoscan/autoscan-archive
+
+*Option 2*
+
+Alternatively you can just remove all files after they have been sent.
+
+    # ln -sf /opt/autoscan/autoscan-postprocessing /opt/autoscan/autoscan-clean
+    # crontab -e
+
+Add the following into the crontab file for root:
+
+    0  *  *  *  *  /opt/autoscan/autoscan-clean
+
+
