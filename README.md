@@ -68,7 +68,7 @@ Create the sppol directory needed for the scanning process. Should not be in `/t
 Configure scanbuttond
 ---------------------
 
-The file `/etc/default/scanbuttond` should must be modified to contain the following configuration:
+The file `/etc/default/scanbuttond` must be modified to contain the following configuration:
 
     # Set to yes to start scanbuttond
     RUN=yes
