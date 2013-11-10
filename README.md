@@ -4,8 +4,8 @@ autoscan
 This is a small Raspberry Pi project to build a home scanning solution that nicely integrates with the Evernote cloud service.
 
 
-Installation on a Raspberry Pi
-------------------------------
+Install necessary packages on a the Pi
+--------------------------------------
 
 On the Raspberri Pi the following packages must be installed for these scripts to work:
 
@@ -48,8 +48,8 @@ Now perform a test scan:
 If everything works well we can go ahead in the configuration.
 
 
-Setting up environment
-----------------------
+Set up environment
+------------------
 
 The files in this workspace are expected to reside in /opt/autoscan.
 
@@ -87,13 +87,15 @@ Next perform the following:
 Configure Email and Evernote
 ----------------------------
 
+The mechanism here creates new Evernote notes via the email method. This is certainly suboptimal and the creation via the Evernote developer API would be much more desirable. However, setting this up for you would also be more complex and that's why I currently stick with the email approach.
+
 Configure your personal settings for autoscan:
 
     $ cd /opt/autoscan
     $ cp .autoscan-config.sample .autoscan-config
     $ nano .autoscan-config
 
-Now change the email addresses and parameters to match your specific context.
+Now change the email addresses and parameters to match your specific context. If you don't know the email address of your account then check out your  Account Info section in Evernote.
 
 
 Configure Scanning Options
@@ -106,10 +108,20 @@ Open buttonpressed.sh and make the necessary modifications that fit your needs. 
 Configure Postprocessing
 ------------------------
 
+Currently there are two possible postprocessing mechanisms:
+
+* The first one moves the generated PDFs into a dedicated archives folder and removes all other files.
+* The second one just removes all files for all completed jobs.
+
+Thus, jobs which could not be finished will remain such that some later sending could be performed. 
+
+We use a `cron` job for user `root` for performing the post processing. 
+
 *Option 1*
 
 Create the archive directory in case you would like to keep the generated PDF around.
 
+    # sudo - su
     # mkdir /archive/autoscan
     # ln -sf /opt/autoscan/autoscan-postprocessing /opt/autoscan/autoscan-archive
     # crontab -e
@@ -122,6 +134,7 @@ Add the following into the crontab file for root:
 
 Alternatively you can just remove all files after they have been sent.
 
+    # sudo - su
     # ln -sf /opt/autoscan/autoscan-postprocessing /opt/autoscan/autoscan-clean
     # crontab -e
 
