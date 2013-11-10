@@ -7,7 +7,7 @@ It builds upon great project descriptions and blogs from other people and I have
 
 * http://johannesnews.blogspot.de/2013/02/scan-to-email-with-only-one-buttonpress.html
 * http://eduardoluis.com/raspberry-pi-and-usb-network-scanner/
-* http://brainofanape.blogspot.de/2012/11/scanning-to-cloud-fujitsu-scansnap.html
+* http://brainofanape.blogspot.de/2012/11/scanning-to-cloud-fujitsu-scansnap.html (not accessible anymore)
 
 Main differences compared to the others is:
 
