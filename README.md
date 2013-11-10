@@ -74,7 +74,7 @@ The files in this workspace are expected to reside in `/opt/autoscan`.
     $ chgrp pi autoscan
     $ git clone git@github.com:rkiliankehr/autoscan.git
 
-Create the sppol directory needed for the scanning process. Should not be in `/tmp` since in case of a tmpfs setup the space would be simply too small.
+Create the spool directory needed for the scanning process. Should not be in `/tmp` since in case of a tmpfs setup the space would be simply too small.
 
     $ sudo mkdir -p /var/spool/autoscan
     $ sudo chown saned /var/spool/autoscan
@@ -170,4 +170,9 @@ Add the following into the crontab file for root:
 Todo
 ----
 
-Lots of things could be improved. 
+Lots of things could be improved. Let's see what comes next...
+
+* Stricter separation of code and configuration.
+* Add installation script for dummies.
+* Add interactive configuration script.
+* ...
