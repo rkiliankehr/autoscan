@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec >/tmp/autoscan-send.$$.log 2>&1
+exec >/tmp/autoscan-send.log 2>&1
 set -vx
 
 . /opt/autoscan/.autoscan-config
