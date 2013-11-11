@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Autoscan by rkiliankehr</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Autoscan</h1>
+        <h2>This is a small Raspberry Pi project to build a home scanning solution that nicely integrates with the Evernote cloud service.</h2>
+        <a href="https://github.com/rkiliankehr/autoscan" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="autoscan" class="anchor" href="#autoscan"><span class="octicon octicon-link"></span></a>autoscan</h1>
+
+<p>This is a small Raspberry Pi project to build a home scanning solution that nicely integrates with the Evernote cloud service.</p>
+
+<p>It builds upon great project descriptions and blogs from other people and I have tried to make it simple(r) for others to consume that prior art such as</p>
+
+<ul>
+<li><a href="http://johannesnews.blogspot.de/2013/02/scan-to-email-with-only-one-buttonpress.html">http://johannesnews.blogspot.de/2013/02/scan-to-email-with-only-one-buttonpress.html</a></li>
+<li><a href="http://eduardoluis.com/raspberry-pi-and-usb-network-scanner/">http://eduardoluis.com/raspberry-pi-and-usb-network-scanner/</a></li>
+<li>
+<a href="http://brainofanape.blogspot.de/2012/11/scanning-to-cloud-fujitsu-scansnap.html">http://brainofanape.blogspot.de/2012/11/scanning-to-cloud-fujitsu-scansnap.html</a> (not accessible anymore)</li>
+</ul><p>Main differences compared to the others is:</p>
+
+<ul>
+<li>make use of the scanner buttons instead of additional GPIO connected buttons;</li>
+<li>scan and then immediately perform the asynchronous post-processing steps such as PDF creation and sending to Evernote;</li>
+<li>increase robustness of the overall solution;</li>
+<li>avoid setting up a full-fledged email system on the raspi.</li>
+</ul><p>Thanks for the great prior work of the colleages listed above.</p>
+
+<h2>
+<a name="install-necessary-packages-on-a-the-pi" class="anchor" href="#install-necessary-packages-on-a-the-pi"><span class="octicon octicon-link"></span></a>Install necessary packages on a the Pi</h2>
+
+<p>On the Raspberri Pi the following packages must be installed for these scripts to work:</p>
+
+<pre><code>$ sudo apt-get install ssmtp sane mailutils scanbuttond imagemagick
+</code></pre>
+
+<h2>
+<a name="check-scanner" class="anchor" href="#check-scanner"><span class="octicon octicon-link"></span></a>Check Scanner</h2>
+
+<p>Connect your scanner via USB with your Raspi and run</p>
+
+<pre><code>$ lsusb
+</code></pre>
+
+<p>You should see something similar as on my Raspi:</p>
+
+<pre><code>Bus 001 Device 002: ID 0424:9512 Standard Microsystems Corp. 
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 001 Device 003: ID 0424:ec00 Standard Microsystems Corp. 
+Bus 001 Device 005: ID 03f0:1705 Hewlett-Packard ScanJet 5590  
+</code></pre>
+
+<p>The last line shows that the Raspi has found the scanner. In this case it is a HP ScanJet model. </p>
+
+<p>Test whether it is supported by the Sane driver:</p>
+
+<pre><code>$ sudo scanimage -L
+device `hp5590:libusb:001:004' is a HP 5590 Workgroup scanner
+</code></pre>
+
+<p>You should see something similar. If not then you probably have a scanner that is not supported by Sane. Check <a href="http://www.sane-project.org/sane-supported-devices.html">Sane Supported Scanners</a> to see what could be the issue.</p>
+
+<p>Now check whether it is working correctly:</p>
+
+<pre><code>$ sudo scanimage -A
+</code></pre>
+
+<p>It should show you some specific options your scanner might support in addition to the default values.</p>
+
+<p>Now perform a test scan:</p>
+
+<pre><code>$ sudo scanimage &gt; /tmp/testscan.pnm
+</code></pre>
+
+<p>If everything works well we can go ahead in the configuration.</p>
+
+<h2>
+<a name="set-up-environment" class="anchor" href="#set-up-environment"><span class="octicon octicon-link"></span></a>Set up environment</h2>
+
+<p>The files in this workspace are expected to reside in <code>/opt/autoscan</code>.</p>
+
+<pre><code>$ sudo mkdir -p /opt/autoscan
+$ cd /opt
+$ sudo chown pi autoscan
+$ chgrp pi autoscan
+$ git clone git@github.com:rkiliankehr/autoscan.git
+</code></pre>
+
+<p>Create the spool directory needed for the scanning process. Should not be in <code>/tmp</code> since in case of a tmpfs setup the space would be simply too small.</p>
+
+<pre><code>$ sudo mkdir -p /var/spool/autoscan
+$ sudo chown saned /var/spool/autoscan
+</code></pre>
+
+<h2>
+<a name="configure-scanbuttond" class="anchor" href="#configure-scanbuttond"><span class="octicon octicon-link"></span></a>Configure scanbuttond</h2>
+
+<p>The file <code>/etc/default/scanbuttond</code> must be modified to contain the following configuration:</p>
+
+<pre><code># Set to yes to start scanbuttond
+RUN=yes
+# Set to the user scanbuttond should run as
+RUN_AS_USER=saned
+</code></pre>
+
+<p>Next perform the following:</p>
+
+<pre><code>$ sudo ln -sf /opt/autoscan/buttonpressed.sh /etc/scanbuttond
+</code></pre>
+
+<p>(Re)start the <code>scanbuttond</code> daemon:</p>
+
+<pre><code>$ sudo /etc/init.d/scanbuttond restart
+</code></pre>
+
+<h2>
+<a name="configure-email-and-evernote" class="anchor" href="#configure-email-and-evernote"><span class="octicon octicon-link"></span></a>Configure Email and Evernote</h2>
+
+<p>The mechanism here creates new Evernote notes via the email method. This is certainly suboptimal and the creation via the Evernote developer API would be much more desirable. However, setting this up for you would also be more complex and that's why I currently stick with the email approach.</p>
+
+<p>Configure your personal settings for autoscan:</p>
+
+<pre><code>$ cd /opt/autoscan
+$ cp .autoscan-config.sample .autoscan-config
+$ nano .autoscan-config
+</code></pre>
+
+<p>Now change the email addresses and parameters to match your specific context. If you don't know the email address of your account then check out your  Account Info section in Evernote.</p>
+
+<h2>
+<a name="configure-scanning-options" class="anchor" href="#configure-scanning-options"><span class="octicon octicon-link"></span></a>Configure Scanning Options</h2>
+
+<p>Now you need to configure what autoscan should do when pressing one of the scanner buttons.</p>
+
+<p>Open <code>buttonpressed.sh</code> and make the necessary modifications that fit your needs. The script should be pretty easy to understand and you should add/modify the relevant parts in the lower part of the script.</p>
+
+<p>In the script here you see that three buttons are currently configured as follows:</p>
+
+<ul>
+<li>Flatbed scan, single document, grayscale, 300 dpi</li>
+<li>Flatbed scan, single document, colour, 200 dpi</li>
+<li>ADF (feeder) scan, multiple documents, grayscale, 300 dpi</li>
+</ul><p>Colour scans with 300 dpi tend to become pretty large and require more processing time (conversion, email send, evernote sync time) they should be used with care. </p>
+
+<h2>
+<a name="configure-postprocessing" class="anchor" href="#configure-postprocessing"><span class="octicon octicon-link"></span></a>Configure Postprocessing</h2>
+
+<p>Currently there are two possible postprocessing mechanisms:</p>
+
+<ul>
+<li>The first one moves the generated PDFs into a dedicated archives folder and removes all other files.</li>
+<li>The second one just removes all files for all completed jobs.</li>
+</ul><p>Thus, jobs which could not be finished will remain such that some later sending could be performed. </p>
+
+<p>We use a <code>cron</code> job for user <code>root</code> for performing the post processing. </p>
+
+<p><em>Option 1</em></p>
+
+<p>Create the archive directory in case you would like to keep the generated PDF around.</p>
+
+<pre><code># sudo - su
+# mkdir /archive/autoscan
+# ln -sf /opt/autoscan/autoscan-postprocessing /opt/autoscan/autoscan-archive
+# crontab -e
+</code></pre>
+
+<p>Add the following into the crontab file for root:</p>
+
+<pre><code>0  *  *  *  *  /opt/autoscan/autoscan-archive
+</code></pre>
+
+<p><em>Option 2</em></p>
+
+<p>Alternatively you can just remove all files after they have been sent.</p>
+
+<pre><code># sudo - su
+# ln -sf /opt/autoscan/autoscan-postprocessing /opt/autoscan/autoscan-clean
+# crontab -e
+</code></pre>
+
+<p>Add the following into the crontab file for root:</p>
+
+<pre><code>0  *  *  *  *  /opt/autoscan/autoscan-clean
+</code></pre>
+
+<h2>
+<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>Todo</h2>
+
+<p>Lots of things could be improved. Let's see what comes next...</p>
+
+<ul>
+<li>Stricter separation of code and configuration.</li>
+<li>Add installation script for dummies.</li>
+<li>Add interactive configuration script.</li>
+<li>...</li>
+</ul>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/rkiliankehr/autoscan/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/rkiliankehr/autoscan/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/rkiliankehr/autoscan"></a> is maintained by <a href="https://github.com/rkiliankehr">rkiliankehr</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
