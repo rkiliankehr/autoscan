@@ -78,7 +78,7 @@ case $BUTTON in
 	    $BINDIR/autoscan-alert "$@"
 	    exit 1  
 	fi
-	nohup $BINDIR/autoscan-process "$SCANFILE" >/dev/null 2>&1 &
+	nohup $BINDIR/autoscan-process "$SCANFILE" 1 1 >/dev/null 2>&1 &
 	exit
 	;;
 
@@ -99,7 +99,7 @@ case $BUTTON in
 	    $BINDIR/autoscan-alert "$@"
 	    exit 1  
 	fi
-	nohup $BINDIR/autoscan-process "$SCANFILE" >/dev/null 2>&1 &
+	nohup $BINDIR/autoscan-process "$SCANFILE" 1 1 >/dev/null 2>&1 &
 	exit
 	;;
 

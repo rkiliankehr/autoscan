@@ -9,8 +9,11 @@
 SCANDIR="$1"
 BINDIR=/opt/autoscan
 
+BATCHSIZE="$(ls $SCANDIR/* | wc -l)"
+i=1
 for SCANFILE in $SCANDIR/*
 do
-	$BINDIR/autoscan-process "$SCANFILE"
+	$BINDIR/autoscan-process "$SCANFILE" "$BATCHSIZE" "$i"
+	i=$(expr $i + 1)
 done
 

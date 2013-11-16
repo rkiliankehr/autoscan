@@ -9,6 +9,8 @@ exec >/tmp/autoscan-process.log 2>&1
 set -vx
 
 FILETIFF="$1"
+BATCHSIZE="$2"
+BATCHNO="$3"
 DIRNAME=$(dirname $FILETIFF)
 BASENAME=$(basename $FILETIFF .tif)
 BASEFILE="$DIRNAME/$BASENAME"
@@ -33,7 +35,7 @@ then
 fi
 touch "$FILEPDF".converted
 
-/opt/autoscan/autoscan-send "$FILEPDF"
+/opt/autoscan/autoscan-send "$FILEPDF" "$BATCHSIZE" "$BATCHNO"
 if [ "$?" != 0 ]
 then 
     /opt/autoscan/autoscan-alert "Sending file "$FILEPDF"' failed."
