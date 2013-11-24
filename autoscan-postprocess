@@ -16,12 +16,34 @@ do
     DIRNAME=$(dirname "$SENT")
     BASEDIR=$(basename "$DIRNAME")
     BASEFILE=$(basename "$SENT" .pdf.sent)
+
     case "$SELF" in
 	autoscan-archive)
-	    mv "$BASEDIR/$BASEFILE".pdf "$ARCHIVEDIR/$BASEDIR.$BASEFILE.pdf"
+
+	    # Keep the original .PDF for archival purposes.
+	    if [ -r "$BASEDIR/$BASEFILE".pdf ]
+	    then 
+		mv "$BASEDIR/$BASEFILE".pdf "$ARCHIVEDIR/$BASEDIR.$BASEFILE.pdf"
+		if [ $? != 0 ]
+		then 
+		    exit 1
+		fi
+	    fi
+
+	    # Keep the original .TIF for local OCR.
+	    if [ -r "$BASEDIR/$BASEFILE".tif ]
+	    then 
+		mv "$BASEDIR/$BASEFILE".tif "$ARCHIVEDIR/$BASEDIR.$BASEFILE.tif"
+		if [ $? != 0 ]
+		then 
+		    exit 1
+		fi
+	    fi
+
 	    rm -f "$BASEDIR/$BASEFILE"*
 	    rmdir "$DIRNAME"
 	    ;;
+
 	autoscan-clear)
 	    rm -f "$BASEDIR/$BASEFILE"*
 	    rmdir "$DIRNAME"
