@@ -1,22 +1,32 @@
 #!/bin/sh
 
+# set -x
+
 SPOOLDIR=/var/spool/autoscan
 ARCHIVEDIR=/archive/autoscan
 SELF=$(basename "$0")
 
 cd "$SPOOLDIR" || 
 { 
-logger "Could not enter spool directory $SPOOL"
-exit 1 
+    logger "Could not enter spool directory $SPOOL"
+    exit 1 
 }
 
-find . -type f -name '*.sent' |
+num_sent=$(ls */*.sent 2>/dev/null | wc -l)
+if [ "$num_sent" = "0" ]
+then
+    echo "No files with extension '.sent' found for processing!"
+    exit 1
+fi
+
+find . -type f -name '*.sent' 2>/dev/null |
 while read SENT
 do
     DIRNAME=$(dirname "$SENT")
     BASEDIR=$(basename "$DIRNAME")
     BASEFILE=$(basename "$SENT" .pdf.sent)
 
+    echo "Processing file '$BASEFILE'..."
     case "$SELF" in
 	autoscan-archive)
 
