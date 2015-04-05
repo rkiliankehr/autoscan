@@ -1,20 +1,23 @@
 #!/bin/sh
+#
+# autoscan-send <file> <basename> <batchsize> <batchno>
+#
 
 exec >/tmp/autoscan-send.log 2>&1
-set -vx
+#set -vx
 
 . /opt/autoscan/.autoscan-config
 
 FILE="$1"
-BATCHSIZE="$2"
-BATCHNO="$3"
-TIME=$(date "+%Y%m%d-%H%M%S")
+BASENAME="$2"
+BATCHSIZE="$3"
+BATCHNO="$4"
 BASEFILE=$(basename $FILE)
 
 logger "Executing autoscan-send '$FILE'."
 
 {
-echo "Subject: [autoscan] $TIME ($BATCHNO/$BATCHSIZE) $EVERNOTE_NOTEBOOK $EVERNOTE_TAGS
+echo "Subject: [autoscan] $BASENAME ($BATCHNO/$BATCHSIZE) $EVERNOTE_NOTEBOOK $EVERNOTE_TAGS
 To: $EVERNOTE_EMAIL
 Mime-Version: 1.0
 Content-Type: Multipart/Mixed; boundary=\"ATTACHMENT-BOUNDRY\"

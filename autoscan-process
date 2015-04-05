@@ -14,6 +14,7 @@ BATCHNO="$3"
 DIRNAME=$(dirname $FILETIFF)
 BASENAME=$(basename $FILETIFF .tif)
 BASEFILE="$DIRNAME/$BASENAME"
+EVERNOTENAME="$(basename $DIRNAME)/$BASENAME"
 FILEPNG="$BASEFILE.png"
 FILEPDF="$BASEFILE.pdf"
 
@@ -35,7 +36,7 @@ then
 fi
 touch "$FILEPDF".converted
 
-/opt/autoscan/autoscan-send "$FILEPDF" "$BATCHSIZE" "$BATCHNO"
+/opt/autoscan/autoscan-send "$FILEPDF" "$EVERNOTENAME" "$BATCHSIZE" "$BATCHNO"
 if [ "$?" != 0 ]
 then 
     /opt/autoscan/autoscan-alert "Sending file "$FILEPDF"' failed."
