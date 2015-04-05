@@ -117,7 +117,7 @@ case $BUTTON in
 	    --batch="$SCANFMT"
 	# scanimage exit code seems to be the number of pages scanned.
         # Hence the following exit code check seems to make sense.
-	if [ $? == 0 ]
+	if [ "$?" = "0" ]
 	then
 	    echo "Scanning failed."
 	    rm -rf "$SCANDIR"
